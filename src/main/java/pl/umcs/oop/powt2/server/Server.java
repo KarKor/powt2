@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server {
     private final static List<ClientThread> clientList = new CopyOnWriteArrayList<>();
-    private static Connection dbConnection;
+    private static Connection dbConnection;// do tego było dodawane javafx controls w module i sqlite w pom
 
     public static void main(String[] args) {
         try(ServerSocket serverSocket = new ServerSocket(5000)) {
@@ -21,15 +21,15 @@ public class Server {
             connectToDatabase();
             while (true) {
                 System.out.println("Oczekiwanie na połączenie...");
-                Socket accepted = serverSocket.accept();
+                Socket accepted = serverSocket.accept(); //można tak, zamiast dawać zewnętrzne socket, ale większej różnicy raczej nie ma
                 System.out.println("Połączono: "+accepted);
 
                 ClientThread ct = new ClientThread(accepted);
-                ct.setDaemon(true);
+                ct.setDaemon(true); //jeśli wszystkie wątki użytkownika zakończą działanie, to wątek program wyłączy się, nawet jeśli wątek daemon nadal działa
                 clientList.add(ct);
                 ct.start();
 
-                System.out.println("Rozpoczynam wesyłanie danych z bazy");
+                System.out.println("Rozpoczynam wysyłanie danych z bazy");
                 for (Dot dot : getSavedDots()) {
                     ct.send(dot.toMessage());
                 }
